@@ -21,7 +21,7 @@ def line_search(func, grad, x0, s):
 
 
 class Result:
-    "class holding result of function optimize"
+    "class holding result of the optimize function"
 
     def __init__(self, x, path):
         self.x = x
@@ -61,7 +61,7 @@ def optimize(func, grad, x0, update_rule=UpdateRule.DIAGONAL, grad_zero_tol=1e-5
     x = np.asarray(x0)
     path = [x]
 
-    # apply initial step with steepest descent
+    # apply initial step along steepest descent direction
     D = np.ones_like(x)
     g0 = grad(x)
     s = -g0
@@ -71,7 +71,7 @@ def optimize(func, grad, x0, update_rule=UpdateRule.DIAGONAL, grad_zero_tol=1e-5
     g1 = grad(x)
 
     # iterate
-    for iter_ctr in range(1, max_iter):
+    for iter_ctr in range(max_iter):
         if np.linalg.norm(g1) < grad_zero_tol * max(np.linalg.norm(x), 1):
             break
 
@@ -79,8 +79,8 @@ def optimize(func, grad, x0, update_rule=UpdateRule.DIAGONAL, grad_zero_tol=1e-5
             y = g1 - g0
             b = s.T @ y
             a = (s ** 2).T @ D
-            dD = ((b - a) / (np.sum(s ** 4) + eps)) * (s ** 2)
-            D = D + dD
+            U = ((b - a) / (np.sum(s ** 4) + eps)) * (s ** 2)
+            D = D + U
 
         elif update_rule == UpdateRule.SCALED_IDENTITY:
             y = g1 - g0

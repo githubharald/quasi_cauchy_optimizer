@@ -1,12 +1,14 @@
 import sys
-from quasi_cauchy_optimizer import optimize, UpdateRule
+
 import autograd.numpy as np
-import matplotlib.pyplot as plt
 import autograd
+import matplotlib.pyplot as plt
+
+from quasi_cauchy_optimizer import optimize, UpdateRule
 
 
 def plot_function(f):
-    "plot 2d function by executing the PyTorch function for each grid point"
+    "plot 2d function"
     num_vals = 50
     x_vals = np.linspace(-5, 5, num_vals)
     y_vals = np.linspace(-5, 5, num_vals)
@@ -22,9 +24,9 @@ def plot_function(f):
 
 
 def test_function(name):
-    func = None
-    x0 = None
-    xt = None
+    func = None  # function
+    x0 = None  # initial guess
+    xt = None  # true value of minimum
     if name == 'beale':
         def func(x):
             x0, x1 = x
@@ -55,10 +57,8 @@ def test_function(name):
         n = 50
 
         def func(x):
-            exps = [2 * ((i % 4) + 1) for i in range(n)
-                    ] if name == 'polyNd' else [2 for _ in range(n)]
-            coeffs = [10 ** (i % 3 - 1) for i in range(n)] if name == 'polyNd' else [10 ** (i % 5 - 2) for i in
-                                                                                     range(n)]
+            exps = [2 * ((i % 4) + 1) for i in range(n) ] if name == 'polyNd' else [2 for _ in range(n)]
+            coeffs = [10 ** (i % 3 - 1) for i in range(n)] if name == 'polyNd' else [10 ** (i % 5 - 2) for i in range(n)]
             return np.sum([c * x[i] ** e for i, (c, e) in enumerate(zip(coeffs, exps))])
 
         x0 = 2 * (np.random.rand(n) - 0.5)  # [1 for _ in range(n)]
@@ -79,8 +79,7 @@ def main():
     if len(sys.argv) >= 2 and sys.argv[1] == 'fast':
         func_names = ['beale', 'polyNd']
     else:
-        func_names = ['beale', 'rosen', 'poly2d',
-                      'quadratic2d', 'quadraticNd', 'polyNd']
+        func_names = ['beale', 'rosen', 'poly2d', 'quadratic2d', 'quadraticNd', 'polyNd']
 
     for func_name in func_names:
         print('Function:', func_name)
@@ -93,8 +92,7 @@ def main():
             plt.figure(func_name)
 
         for i, update_rule in enumerate([UpdateRule.DIAGONAL, UpdateRule.SCALED_IDENTITY, UpdateRule.IDENTITY]):
-            res = optimize(func, grad, x0, update_rule=update_rule,
-                           max_iter=500, grad_zero_tol=1e-4)
+            res = optimize(func, grad, x0, update_rule=update_rule, max_iter=500, grad_zero_tol=1e-4)
 
             err = np.linalg.norm(xt - res.x)
             num_iter = len(res.path)
@@ -111,10 +109,8 @@ def main():
             plot_function(func)
             plt.plot(res.path[:, 0], res.path[:, 1], 'r-*', label='path')
 
-            plt.plot(res.path[:1, 0], res.path[:1, 1],
-                     'w^', label='init iterate')
-            plt.plot(res.path[-1:, 0], res.path[-1:, 1],
-                     'k^', label='final iterate')
+            plt.plot(res.path[:1, 0], res.path[:1, 1], 'w^', label='init iterate')
+            plt.plot(res.path[-1:, 0], res.path[-1:, 1], 'k^', label='final iterate')
             plt.plot([xt[0]], [xt[1]], 'g*', label='true min')
 
             plt.legend()

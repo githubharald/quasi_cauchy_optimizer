@@ -1,8 +1,8 @@
 # Quasi Cauchy Optimizer
 
-Implementation of the quasi cauchy optimizer as described in the paper of [Zhu](http://www.math.uwaterloo.ca/~hwolkowi/henry/reports/cauchy.pdf).
+Implementation of the quasi cauchy optimizer as described in the paper of [Zhu et al](http://www.math.uwaterloo.ca/~hwolkowi/henry/reports/cauchy.pdf).
 It approximates the Hessian by a diagonal matrix.
-The method is very memory-efficient, because a diagonal matrix has the same memory-footprint as a vector.
+This makes the method very memory-efficient, because a diagonal matrix has the same memory-footprint as a vector.
 
 
 ## Get started
@@ -11,7 +11,7 @@ The method is very memory-efficient, because a diagonal matrix has the same memo
 
 * Install requirements: `pip install -r requirements.txt`
 * Run optimizer on simple test-functions
-    * Fast version testing only two functions: `python example_test_funcs.py fast`
+    * Fast version tests only two functions: `python example_test_funcs.py fast`
     * Test all functions: `python example_test_funcs.py`
 * Run optimizer on logistic regression problem: `python example_log_reg.py`
 
@@ -42,23 +42,22 @@ Here is a small example to compute the minimum of a quadratic function:
 from quasi_cauchy_optimizer import optimize, UpdateRule
 import numpy as np
 
-# function to minimize: x**2 + y**2
+# function to minimize: 5 * x**2 + y**2
 def func(x):
-    return x[0]**2 + x[1]**2
+    return 5 * x[0]**2 + x[1]**2
 
-# gradient of function: (2x, 2y)
+# gradient of function: (10x, 2y)
 def grad(x):
-    return 2*np.asarray([x[0], x[1]])
+    return np.asarray([10, 2]) * x
 
 # define start value
-x0=np.asarray([1, 2])
+x0 = np.asarray([1, 2])
 
 # run optimizer
 res = optimize(func, grad, x0, UpdateRule.DIAGONAL, grad_zero_tol=1e-5)
 
 # print result
 print(res.x)
-
 ````
 
 Function arguments: 
@@ -68,7 +67,7 @@ Function arguments:
 * update_rule
     * UpdateRule.DIAGONAL: Hessian approximated as diagonal matrix
     * UpdateRule.SCALED_IDENTITY: Hessian approximated as scaled identity matrix
-    * UpdateRule.IDENTITY: Hessian approximated as identity matrix (included to have a baseline for evaluation)
+    * UpdateRule.IDENTITY: Hessian approximated as identity matrix (that is vanilla gradient descent, included only to have a baseline for evaluation)
 * grad_zero_tol: if gradient norm is below this value, the algorithm terminates
 * eps: small value that it added to denominator to avoid division by 0
 * min_curv: Hessian values are clipped to [min_curv, max_curv]
@@ -81,8 +80,8 @@ Function arguments:
 To ensure having a descent direction, the Hessian simply is clipped, where the minimum value (min_curv) should be set to some small value larger than 0.
 A line-search is applied along the computed update-direction to get a reasonable step-size.
 
-The diagonal approximation (UpdateRule.DIAGONAL) performs best for high-dimensional functions for which scale varies across dimensions. 
+The diagonal approximation (UpdateRule.DIAGONAL) performs best for high-dimensional functions with scale varying across dimensions. 
 Otherwise, the simple scaled identity approximation (UpdateRule.SCALED_IDENTITY) performs best. 
 This also includes the typical 2D test-functions like Rosenbrock.
 
-For results and details on how the Hessian approximation is computed see [this article](https://githubharald.github.io/fast_inv_sqrt.html).
+For results and details on how the Hessian approximation is computed see [this article](https://githubharald.github.io/quasi_cauchy.html).

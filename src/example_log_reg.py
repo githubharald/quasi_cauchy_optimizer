@@ -4,7 +4,7 @@ from quasi_cauchy_optimizer import optimize, UpdateRule
 
 
 def get_data(dim):
-    "create data-points with specified dimension for two classes"
+    "create data-points with specified dimension for two classes (0 and 1)"
     num_a = 100
     num_b = 100
 
@@ -32,7 +32,7 @@ def calc_prob(x, beta):
 
 
 def classify(x, beta):
-    "get class of x. x contains the bias term."
+    "get class (0 or 1) of x. x contains the bias term."
     return 1 if calc_prob(x, beta) > 0.5 else 0
 
 
@@ -60,7 +60,7 @@ def train_and_evaluate(dim):
         terms = [x_i * (y_i - calc_prob(x_i, beta)) for x_i, y_i in zip(X, Y)]
         return -np.sum(terms, axis=0)
 
-    # try both the weak secant update and the scaled identity update
+    # try both the diagonal update and the scaled identity update
     beta0 = np.zeros([dim + 1])  # +1 for bias
     for update_rule in [UpdateRule.DIAGONAL, UpdateRule.SCALED_IDENTITY]:
         # compute optimal parameters
@@ -77,7 +77,7 @@ def train_and_evaluate(dim):
 
 def main():
     # train and evaluate logistic regression model for different dimensions
-    for dim in [1, 10, 20, 30, 40]:
+    for dim in [1, 10, 20, 30, 40, 50]:
         print(f'dim={dim}')
         train_and_evaluate(dim)
         print()  # put newline after results
