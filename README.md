@@ -1,8 +1,8 @@
 # Quasi Cauchy Optimizer
 
 Implementation of the quasi cauchy optimizer as described in the paper of [Zhu et al](http://www.math.uwaterloo.ca/~hwolkowi/henry/reports/cauchy.pdf).
-It approximates the Hessian by a diagonal matrix.
-This makes the method very memory-efficient, because a diagonal matrix has the same memory-footprint as a vector.
+It approximates the Hessian by a diagonal matrix which satisfies the weak secant equation.
+The method is very memory-efficient, because a diagonal matrix has the same memory-footprint as a vector.
 
 
 ## Get started
