@@ -1,10 +1,9 @@
 import numpy as np
 
 
-def line_search(func, grad, x0, s):
+def line_search(func, g0, x0, s):
     "apply line-search in direction s, starting from x0"
     f0 = func(x0)
-    g0 = grad(x0)
 
     a = 1
     c = 1e-4
@@ -65,7 +64,7 @@ def optimize(func, grad, x0, update_rule=UpdateRule.DIAGONAL, grad_zero_tol=1e-5
     D = np.ones_like(x)
     g0 = grad(x)
     s = -g0
-    s = line_search(func, grad, x, s)
+    s = line_search(func, g0, x, s)
     x = x + s
     path.append(x)
     g1 = grad(x)
@@ -93,7 +92,7 @@ def optimize(func, grad, x0, update_rule=UpdateRule.DIAGONAL, grad_zero_tol=1e-5
         D = np.clip(D, min_curv, max_curv)
 
         s = -g1 / D
-        s = line_search(func, grad, x, s)
+        s = line_search(func, g1, x, s)
         x = x + s
         path.append(x)
         g0 = g1
