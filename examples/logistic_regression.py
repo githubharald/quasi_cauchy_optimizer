@@ -69,8 +69,7 @@ def train_and_evaluate(dim):
         beta = res.x
 
         # output result
-        update_rule_name = UpdateRule.to_string(update_rule)
-        print(update_rule_name)
+        print(update_rule.name)
         acc = sum([classify(x, beta) == y for x, y in zip(X, Y)]) / len(X)
         print(f'iter={len(res.path)}, acc={acc}')
 

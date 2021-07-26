@@ -1,7 +1,7 @@
 import sys
 
-import autograd.numpy as np
 import autograd
+import autograd.numpy as np
 import matplotlib.pyplot as plt
 
 from quasi_cauchy_optimizer import optimize, UpdateRule
@@ -57,8 +57,9 @@ def test_function(name):
         n = 50
 
         def func(x):
-            exps = [2 * ((i % 4) + 1) for i in range(n) ] if name == 'polyNd' else [2 for _ in range(n)]
-            coeffs = [10 ** (i % 3 - 1) for i in range(n)] if name == 'polyNd' else [10 ** (i % 5 - 2) for i in range(n)]
+            exps = [2 * ((i % 4) + 1) for i in range(n)] if name == 'polyNd' else [2 for _ in range(n)]
+            coeffs = [10 ** (i % 3 - 1) for i in range(n)] if name == 'polyNd' else [10 ** (i % 5 - 2) for i in
+                                                                                     range(n)]
             return np.sum([c * x[i] ** e for i, (c, e) in enumerate(zip(coeffs, exps))])
 
         x0 = 2 * (np.random.rand(n) - 0.5)  # [1 for _ in range(n)]
@@ -85,7 +86,9 @@ def main():
         print('Function:', func_name)
 
         func, x0, xt = test_function(func_name)
-        def grad(v): return autograd.grad(func)(v)
+
+        def grad(v):
+            return autograd.grad(func)(v)
 
         make_2d_plot = len(x0) == 2
         if make_2d_plot:
@@ -96,21 +99,22 @@ def main():
 
             err = np.linalg.norm(xt - res.x)
             num_iter = len(res.path)
-            update_rule_name = UpdateRule.to_string(update_rule)
-            print(f'{func_name}, {update_rule_name}, err={err:.3f}, iter={num_iter}')
+            print(f'{func_name}, {update_rule.name}, err={err:.3f}, iter={num_iter}')
 
             if not make_2d_plot:
                 continue
 
             plt.subplot(1, 3, i + 1)
 
-            plt.title(f'{update_rule_name}, err={err:.3f}, iter={num_iter}')
+            plt.title(f'{update_rule.name}, err={err:.3f}, iter={num_iter}')
 
             plot_function(func)
-            plt.plot(res.path[:, 0], res.path[:, 1], 'r-*', label='path')
 
-            plt.plot(res.path[:1, 0], res.path[:1, 1], 'w^', label='init iterate')
-            plt.plot(res.path[-1:, 0], res.path[-1:, 1], 'k^', label='final iterate')
+            path = np.array(res.path)
+            plt.plot(path[:, 0], path[:, 1], 'r-*', label='path')
+
+            plt.plot(path[:1, 0], path[:1, 1], 'w^', label='init iterate')
+            plt.plot(path[-1:, 0], path[-1:, 1], 'k^', label='final iterate')
             plt.plot([xt[0]], [xt[1]], 'g*', label='true min')
 
             plt.legend()
